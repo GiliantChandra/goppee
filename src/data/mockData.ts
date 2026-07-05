@@ -1,4 +1,4 @@
-import type { User, Account, Transaction, Contact, SpendingData } from '../types';
+import type { User, Account, Transaction, Contact, SpendingData, Goal, Loan, Notification } from '../types';
 
 export const mockUser: User = {
   id: 'u1',
@@ -32,7 +32,7 @@ export const mockAccounts: Account[] = [
     cardNumber: '5412 •••• •••• 3345',
     expiryDate: '03/27',
     cvv: '•••',
-    gradient: ['#14b8a6', '#0ea5e9'],
+    gradient: ['#0ea5e9', '#14b8a6'],
   },
   {
     id: 'acc3',
@@ -44,7 +44,7 @@ export const mockAccounts: Account[] = [
     cardNumber: '3714 •••• •••• 6612',
     expiryDate: '11/29',
     cvv: '•••',
-    gradient: ['#f59e0b', '#ef4444'],
+    gradient: ['#f59e0b', '#f97316'],
   },
 ];
 
@@ -56,7 +56,7 @@ export const mockTransactions: Transaction[] = [
     amount: 85_000,
     type: 'debit',
     category: 'food',
-    date: '2026-07-03T09:15:00',
+    date: '2026-07-05T09:15:00',
     accountId: 'acc1',
     status: 'completed',
   },
@@ -184,11 +184,12 @@ export const mockTransactions: Transaction[] = [
 ];
 
 export const mockContacts: Contact[] = [
-  { id: 'c1', name: 'Budi Santoso', bank: 'BCA', accountNumber: '1234567890', avatar: 'BS' },
-  { id: 'c2', name: 'Citra Dewi', bank: 'Mandiri', accountNumber: '9876543210', avatar: 'CD' },
-  { id: 'c3', name: 'Dian Rahayu', bank: 'BNI', accountNumber: '1122334455', avatar: 'DR' },
-  { id: 'c4', name: 'Eko Wijaya', bank: 'BRI', accountNumber: '5566778899', avatar: 'EW' },
-  { id: 'c5', name: 'Fitria Sari', bank: 'CIMB', accountNumber: '2233445566', avatar: 'FS' },
+  { id: 'c1', name: 'Budi Santoso', bank: 'BCA', accountNumber: '1234567890', avatar: 'BS', color: '#6366f1' },
+  { id: 'c2', name: 'Citra Dewi', bank: 'Mandiri', accountNumber: '9876543210', avatar: 'CD', color: '#ec4899' },
+  { id: 'c3', name: 'Dian Rahayu', bank: 'BNI', accountNumber: '1122334455', avatar: 'DR', color: '#f59e0b' },
+  { id: 'c4', name: 'Eko Wijaya', bank: 'BRI', accountNumber: '5566778899', avatar: 'EW', color: '#10b981' },
+  { id: 'c5', name: 'Fitria Sari', bank: 'CIMB', accountNumber: '2233445566', avatar: 'FS', color: '#14b8a6' },
+  { id: 'c6', name: 'Gunawan R.', bank: 'BSI', accountNumber: '3344556677', avatar: 'GR', color: '#8b5cf6' },
 ];
 
 export const mockSpending: SpendingData[] = [
@@ -196,6 +197,68 @@ export const mockSpending: SpendingData[] = [
   { month: 'Mar', amount: 5_800_000 },
   { month: 'Apr', amount: 3_900_000 },
   { month: 'May', amount: 6_100_000 },
-  { month: 'Jun', amount: 5_200_000 },
+  { month: 'Jun', amount: 6_800_000 },
   { month: 'Jul', amount: 5_829_000 },
+];
+
+export const mockGoals: Goal[] = [
+  { id: 'g1', name: 'Emergency Fund', icon: '🛡️', target: 50_000_000, current: 36_500_000, deadline: 'Dec 2026', color: '#6366f1' },
+  { id: 'g2', name: 'Bali Vacation', icon: '🏖️', target: 15_000_000, current: 9_200_000, deadline: 'Sep 2026', color: '#14b8a6' },
+  { id: 'g3', name: 'New Laptop', icon: '💻', target: 25_000_000, current: 18_000_000, deadline: 'Aug 2026', color: '#f59e0b' },
+  { id: 'g4', name: 'House Down Payment', icon: '🏠', target: 200_000_000, current: 78_500_000, deadline: 'Jun 2028', color: '#ec4899' },
+];
+
+export const mockLoans: Loan[] = [
+  {
+    id: 'l1',
+    name: 'KPR Rumah',
+    totalAmount: 500_000_000,
+    remaining: 387_000_000,
+    monthlyPayment: 4_200_000,
+    nextDueDate: '2026-08-01',
+    interestRate: 7.5,
+    color: '#6366f1',
+    icon: '🏠',
+  },
+  {
+    id: 'l2',
+    name: 'KKB Motor',
+    totalAmount: 25_000_000,
+    remaining: 11_500_000,
+    monthlyPayment: 850_000,
+    nextDueDate: '2026-07-15',
+    interestRate: 9.0,
+    color: '#f59e0b',
+    icon: '🏍️',
+  },
+  {
+    id: 'l3',
+    name: 'KTA Personal',
+    totalAmount: 30_000_000,
+    remaining: 18_200_000,
+    monthlyPayment: 1_100_000,
+    nextDueDate: '2026-07-20',
+    interestRate: 12.5,
+    color: '#ec4899',
+    icon: '💳',
+  },
+];
+
+export const mockNotifications: Notification[] = [
+  { id: 'n1', title: 'Transfer Received', body: 'Budi Santoso sent you Rp 500.000', time: '2 min ago', read: false, icon: '💸' },
+  { id: 'n2', title: 'Loan Due Soon', body: 'KKB Motor due on July 15 — Rp 850.000', time: '1 hour ago', read: false, icon: '⚠️' },
+  { id: 'n3', title: 'Salary Credited', body: 'Rp 12.500.000 from PT Teknologi Maju', time: '4 days ago', read: true, icon: '✅' },
+  { id: 'n4', title: 'Security Alert', body: 'New login from Chrome on Windows', time: '5 days ago', read: true, icon: '🔒' },
+  { id: 'n5', title: 'Goal Milestone', body: 'Emergency Fund reached 73%!', time: '1 week ago', read: true, icon: '🎯' },
+];
+
+export const categorySpending = [
+  { label: 'Shopping',      amount: 1_993_000, color: '#ec4899', icon: '🛍️' },
+  { label: 'Travel',        amount: 2_850_000, color: '#14b8a6', icon: '✈️' },
+  { label: 'Transfer',      amount: 2_000_000, color: '#6366f1', icon: '↔️' },
+  { label: 'Food',          amount: 230_000,   color: '#f59e0b', icon: '🍔' },
+  { label: 'Transport',     amount: 245_000,   color: '#3b82f6', icon: '🚗' },
+  { label: 'Entertainment', amount: 186_000,   color: '#8b5cf6', icon: '🎬' },
+  { label: 'Utilities',     amount: 450_000,   color: '#10b981', icon: '⚡' },
+  { label: 'Health',        amount: 75_000,    color: '#ef4444', icon: '❤️' },
 ];

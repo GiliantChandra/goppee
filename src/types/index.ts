@@ -1,4 +1,4 @@
-export type PageName = 'login' | 'dashboard' | 'transfer' | 'transactions' | 'cards' | 'settings';
+export type PageName = 'login' | 'dashboard' | 'transfer' | 'transactions' | 'cards' | 'settings' | 'loans' | 'investments';
 
 export interface User {
   id: string;
@@ -52,9 +52,41 @@ export interface Contact {
   bank: string;
   accountNumber: string;
   avatar: string;
+  color: string;
 }
 
 export interface SpendingData {
   month: string;
   amount: number;
+}
+
+export interface Goal {
+  id: string;
+  name: string;
+  icon: string;
+  target: number;
+  current: number;
+  deadline: string;
+  color: string;
+}
+
+export interface Loan {
+  id: string;
+  name: string;
+  totalAmount: number;
+  remaining: number;
+  monthlyPayment: number;
+  nextDueDate: string;
+  interestRate: number;
+  color: string;
+  icon: string;
+}
+
+export interface Notification {
+  id: string;
+  title: string;
+  body: string;
+  time: string;
+  read: boolean;
+  icon: string;
 }

@@ -8,6 +8,8 @@ import TransferPage from './pages/TransferPage';
 import TransactionsPage from './pages/TransactionsPage';
 import CardsPage from './pages/CardsPage';
 import SettingsPage from './pages/SettingsPage';
+import LoansPage from './pages/LoansPage';
+import InvestmentsPage from './pages/InvestmentsPage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -25,6 +27,8 @@ function App() {
       case 'transactions': return <TransactionsPage />;
       case 'cards':        return <CardsPage />;
       case 'settings':     return <SettingsPage />;
+      case 'loans':        return <LoansPage />;
+      case 'investments':  return <InvestmentsPage />;
       default:             return <DashboardPage onNavigate={setCurrentPage} />;
     }
   }
@@ -43,7 +47,7 @@ function App() {
           onNavigate={setCurrentPage}
           onLogout={() => setIsLoggedIn(false)}
         />
-        <main style={{ flex: 1, overflowY: 'auto' }}>
+        <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
           {renderPage()}
         </main>
       </div>
