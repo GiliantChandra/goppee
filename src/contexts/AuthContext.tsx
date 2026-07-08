@@ -54,7 +54,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     setError(null);
-    setIsLoading(true);
     try {
       await authService.login(email, password);
       const me = await authService.getMe();
@@ -62,18 +61,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       setError(getApiError(err));
       throw err;
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 
   const register = useCallback(async (name: string, email: string, password: string, phone?: string) => {
     setError(null);
-    setIsLoading(true);
     try {
-      // the auth.service.ts register might not login automatically, let's check its response.
-      // Wait, let's look at what register does. It returns res.data but doesn't set accessToken.
-      // So we must login after register.
       await authService.register(email, password, name, phone);
       await authService.login(email, password);
       const me = await authService.getMe();
@@ -81,8 +74,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       setError(getApiError(err));
       throw err;
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 
