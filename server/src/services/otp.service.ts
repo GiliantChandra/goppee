@@ -5,7 +5,7 @@ import { config } from '../config';
 
 /** Generate a 6-digit numeric OTP, hash it, store in DB. Returns raw OTP. */
 export async function generateOtp(userId: string, accountId: string, amount: number, method: string): Promise<string> {
-  const rawOtp = String(Math.floor(100000 + crypto.randomInt(900000))).padStart(6, '0');
+  const rawOtp = config.DEMO_MODE ? '123456' : String(Math.floor(100000 + crypto.randomInt(900000))).padStart(6, '0');
   const otpHash = await bcrypt.hash(rawOtp, 10); // cost 10 — OTPs are short-lived
 
   const expiresAt = new Date(Date.now() + config.OTP_EXPIRES_MINUTES * 60 * 1000);
