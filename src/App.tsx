@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { PageName } from './types';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import LoginPage from './pages/LoginPage';
@@ -10,14 +11,34 @@ import CardsPage from './pages/CardsPage';
 import SettingsPage from './pages/SettingsPage';
 import LoansPage from './pages/LoansPage';
 import InvestmentsPage from './pages/InvestmentsPage';
+import PocketsPage from './pages/PocketsPage';
+import ValasPage from './pages/ValasPage';
+import TopUpPage from './pages/TopUpPage';
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+function AppInner() {
+  const { isAuthenticated, isLoading, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState<PageName>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  if (!isLoggedIn) {
-    return <LoginPage onLogin={() => setIsLoggedIn(true)} />;
+  // Loading state while restoring session from stored token
+  if (isLoading) {
+    return (
+      <div style={{
+        minHeight: '100vh', background: '#020617',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px',
+      }}>
+        <div style={{
+          width: '48px', height: '48px', border: '3px solid rgba(99,102,241,0.3)',
+          borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 0.8s linear infinite',
+        }} />
+        <div style={{ color: '#64748b', fontSize: '14px' }}>Restoring session...</div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
   }
 
   function renderPage() {
@@ -29,6 +50,9 @@ function App() {
       case 'settings':     return <SettingsPage />;
       case 'loans':        return <LoansPage />;
       case 'investments':  return <InvestmentsPage />;
+      case 'pockets':      return <PocketsPage />;
+      case 'valas':        return <ValasPage />;
+      case 'topup':        return <TopUpPage />;
       default:             return <DashboardPage onNavigate={setCurrentPage} />;
     }
   }
@@ -45,7 +69,7 @@ function App() {
         <Header
           currentPage={currentPage}
           onNavigate={setCurrentPage}
-          onLogout={() => setIsLoggedIn(false)}
+          onLogout={logout}
         />
         <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
           {renderPage()}
@@ -55,4 +79,10 @@ function App() {
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppInner />
+    </AuthProvider>
+  );
+}

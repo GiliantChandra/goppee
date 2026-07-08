@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import AccountCard from '../components/AccountCard';
-import { mockAccounts, mockContacts } from '../data/mockData';
+import { getAccounts, type Account } from '../services/account.service';
+import { createTransfer } from '../services/transaction.service';
+import { getApiError } from '../services/api';
+import { mockContacts } from '../data/mockData';
+import { v4 as uuidv4 } from 'uuid';
 import type { Contact } from '../types';
 
 // PIN Modal
-function PinModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) {
+function PinModal({ onConfirm, onCancel, error }: { onConfirm: (pin: string) => void; onCancel: () => void; error?: string }) {
   const [pin, setPin] = useState('');
   const [shake, setShake] = useState(false);
   const correctPin = '1234';
@@ -13,12 +17,9 @@ function PinModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: ()
     if (pin.length >= 6) return;
     const next = pin + k;
     setPin(next);
-    if (next.length === 4) {
-      if (next === correctPin) {
-        setTimeout(onConfirm, 300);
-      } else {
-        setShake(true);
-        setTimeout(() => { setPin(''); setShake(false); }, 600);
+    if (next.length === 4 || next.length === 6) { // support 4-6 digit pin
+      if (next.length === 6) { // assume 6 is final for simplicity, actually let's just use 6 as standard now
+        setTimeout(() => onConfirm(next), 300);
       }
     }
   }
@@ -43,7 +44,8 @@ function PinModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: ()
             display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px',
           }}>🔐</div>
           <div style={{ fontSize: '18px', fontWeight: 700, color: '#f8fafc' }}>Enter PIN</div>
-          <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>Enter your 4-digit PIN to authorize</div>
+          <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>Enter your PIN to authorize</div>
+          {error && <div style={{ fontSize: '13px', color: '#ef4444', marginTop: '8px' }}>{error}</div>}
         </div>
 
         {/* PIN dots */}
@@ -51,7 +53,7 @@ function PinModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: ()
           display: 'flex', justifyContent: 'center', gap: '14px', marginBottom: '28px',
           animation: shake ? 'shake 0.5s ease' : 'none',
         }}>
-          {[0, 1, 2, 3].map(i => (
+          {[0, 1, 2, 3, 4, 5].map(i => (
             <div key={i} style={{
               width: '16px', height: '16px', borderRadius: '50%',
               background: pin.length > i ? '#6366f1' : 'rgba(255,255,255,0.1)',
@@ -110,8 +112,45 @@ export default function TransferPage() {
   const [destAccount, setDestAccount] = useState('');
   const [destBank, setDestBank] = useState('BCA');
 
-  const from = mockAccounts.find(a => a.id === fromAcc) ?? mockAccounts[0];
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [transferring, setTransferring] = useState(false);
+  const [error, setError] = useState('');
+  
+  useEffect(() => {
+    getAccounts().then(accs => {
+      setAccounts(accs);
+      if (accs.length > 0) setFromAcc(accs[0].id);
+      setLoading(false);
+    });
+  }, []);
+
+  const from = accounts.find(a => a.id === fromAcc) ?? accounts[0];
   const banks = ['BCA', 'Mandiri', 'BNI', 'BRI', 'CIMB', 'BSI', 'Permata', 'Danamon'];
+
+  async function handleConfirmPin(pin: string) {
+    if (!from) return;
+    setTransferring(true);
+    setError('');
+    try {
+      const numAmount = parseInt(amount.replace(/\D/g, ''), 10);
+      const toAccountNumber = transferType === 'contact' && selectedContact ? selectedContact.accountNumber : destAccount;
+      await createTransfer({
+        fromAccountId: from.id,
+        toAccountNumber,
+        amount: numAmount,
+        note,
+        idempotencyKey: uuidv4(),
+        pin
+      });
+      setStep('success');
+    } catch (err) {
+      setError(getApiError(err));
+      // stay on PIN step to let them retry or cancel
+    } finally {
+      setTransferring(false);
+    }
+  }
 
   function formatRp(val: string): string {
     const num = val.replace(/\D/g, '');
@@ -216,10 +255,14 @@ export default function TransferPage() {
     );
   }
 
+  if (loading) {
+    return <div style={{ padding: '40px', color: '#64748b' }}>Loading...</div>;
+  }
+
   return (
     <>
       {step === 'pin' && (
-        <PinModal onConfirm={() => setStep('success')} onCancel={() => setStep('confirm')} />
+        <PinModal onConfirm={handleConfirmPin} onCancel={() => { setStep('confirm'); setError(''); }} error={error} />
       )}
 
       <div style={{ padding: '24px 28px', animation: 'fadeIn 0.4s ease' }}>
@@ -230,16 +273,16 @@ export default function TransferPage() {
             <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px', padding: '22px' }}>
               <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', margin: '0 0 14px' }}>From Account</h3>
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                {mockAccounts.map(acc => (
+                {accounts.map(acc => (
                   <button key={acc.id} onClick={() => setFromAcc(acc.id)} style={{
                     flex: '1 1 140px', padding: '12px 14px', borderRadius: '12px',
-                    background: fromAcc === acc.id ? `${acc.gradient[0]}22` : 'rgba(255,255,255,0.03)',
-                    border: fromAcc === acc.id ? `1px solid ${acc.gradient[0]}66` : '1px solid rgba(255,255,255,0.06)',
+                    background: fromAcc === acc.id ? `${acc.gradient?.[0] ?? '#6366f1'}22` : 'rgba(255,255,255,0.03)',
+                    border: fromAcc === acc.id ? `1px solid ${acc.gradient?.[0] ?? '#6366f1'}66` : '1px solid rgba(255,255,255,0.06)',
                     cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
                   }}>
                     <div style={{ fontSize: '10px', color: '#64748b', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{acc.label}</div>
                     <div style={{ fontSize: '13px', fontWeight: 800, color: '#f8fafc' }}>
-                      Rp {new Intl.NumberFormat('id-ID').format(acc.balance)}
+                      Rp {new Intl.NumberFormat('id-ID').format(parseInt(acc.balance, 10))}
                     </div>
                   </button>
                 ))}
@@ -393,7 +436,7 @@ export default function TransferPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px', padding: '22px' }}>
               <h3 style={{ fontSize: '13px', fontWeight: 600, color: '#64748b', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Sending From</h3>
-              <AccountCard account={from} size="small" />
+              {from && <AccountCard account={from} size="small" />}
             </div>
 
             {/* Transfer info */}

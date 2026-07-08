@@ -1,0 +1,69 @@
+version: '3.9'
+
+services:
+  # ─── PostgreSQL Database ────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: novapay_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: novapay
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: novapay_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # NOT exposed to host — only accessible within the Docker network
+    networks:
+      - novapay_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U novapay -d novapay_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Backend API ─────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./server
+      dockerfile: ../Dockerfile.backend
+    container_name: novapay_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DEMO_MODE: ${DEMO_MODE:-true}
+      DATABASE_URL: postgresql://novapay:${DB_PASSWORD}@db:5432/novapay_db
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-60000}
+      LOGIN_RATE_LIMIT_MAX: ${LOGIN_RATE_LIMIT_MAX:-5}
+      TRANSFER_RATE_LIMIT_MAX: ${TRANSFER_RATE_LIMIT_MAX:-10}
+      TOPUP_RATE_LIMIT_MAX: ${TOPUP_RATE_LIMIT_MAX:-5}
+      OTP_EXPIRES_MINUTES: ${OTP_EXPIRES_MINUTES:-5}
+      OTP_MAX_ATTEMPTS: ${OTP_MAX_ATTEMPTS:-3}
+      MAX_FAILED_LOGIN_ATTEMPTS: ${MAX_FAILED_LOGIN_ATTEMPTS:-5}
+      SEED_USER_EMAIL: ${SEED_USER_EMAIL:-arjuna@novapay.id}
+      SEED_USER_PASSWORD: ${SEED_USER_PASSWORD:-Password1!}
+      SEED_USER_PIN: ${SEED_USER_PIN:-1234}
+    networks:
+      - novapay_net
+    ports:
+      - "4000:4000"
+
+  # ─── Frontend (dev — served by Vite directly in dev mode) ───────────────────
+  # In dev, run `npm run dev` locally; use docker-compose.prod.yml for production.
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  novapay_net:
+    driver: bridge

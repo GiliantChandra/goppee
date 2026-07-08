@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { PageName } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 import { mockNotifications } from '../data/mockData';
 
 interface HeaderProps {
@@ -17,9 +18,14 @@ const pageTitles: Record<PageName, string> = {
   settings: 'Settings',
   loans: 'My Loans',
   investments: 'Investments',
+  pockets: 'My Pockets',
+  valas: 'Valas',
+  topup: 'Top-Up',
 };
 
 export default function Header({ currentPage, onNavigate, onLogout }: HeaderProps) {
+  const { user } = useAuth();
+  const initials = user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() ?? 'NP';
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState(mockNotifications);
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -166,7 +172,7 @@ export default function Header({ currentPage, onNavigate, onLogout }: HeaderProp
         onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 16px rgba(99,102,241,0.5)')}
         onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.boxShadow = 'none')}
         title="Settings"
-      >AP</button>
+      >{initials}</button>
 
       {/* Logout */}
       <button onClick={onLogout} style={{

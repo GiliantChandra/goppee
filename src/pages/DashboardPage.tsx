@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import AccountCard from '../components/AccountCard';
 import TransactionItem from '../components/TransactionItem';
 import SpendingChart from '../components/SpendingChart';
-import { mockAccounts, mockTransactions, mockSpending, mockGoals, categorySpending } from '../data/mockData';
+import { mockSpending, mockGoals, categorySpending } from '../data/mockData';
+import { getAccounts, type Account } from '../services/account.service';
+import { getTransactions, type Transaction } from '../services/transaction.service';
 import type { PageName } from '../types';
 
 interface DashboardPageProps {
@@ -189,8 +191,29 @@ const quickActions = [
 
 export default function DashboardPage({ onNavigate }: DashboardPageProps) {
   const [activeAccount, setActiveAccount] = useState(0);
-  const recent = mockTransactions.slice(0, 5);
-  const totalBalance = mockAccounts.reduce((s, a) => s + a.balance, 0);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const [accs, txns] = await Promise.all([
+          getAccounts(),
+          getTransactions({ limit: 5 }),
+        ]);
+        setAccounts(accs);
+        setTransactions(txns.transactions);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const totalBalance = accounts.reduce((s, a) => s + parseInt(a.balance, 10), 0);
 
   function getGreeting() {
     const h = new Date().getHours();
@@ -253,17 +276,25 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
               View all →
             </button>
           </div>
-          <AccountCard account={mockAccounts[activeAccount]} active size="large" />
-          <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
-            {mockAccounts.map((_, i) => (
-              <button key={i} onClick={() => setActiveAccount(i)} style={{
-                width: i === activeAccount ? '22px' : '7px', height: '7px',
-                borderRadius: '4px',
-                background: i === activeAccount ? mockAccounts[i].gradient[0] : 'rgba(255,255,255,0.15)',
-                border: 'none', cursor: 'pointer', transition: 'all 0.3s', padding: 0,
-              }} />
-            ))}
-          </div>
+          {loading ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading...</div>
+          ) : accounts.length > 0 ? (
+            <>
+              <AccountCard account={accounts[activeAccount]} active size="large" />
+              <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
+                {accounts.map((_, i) => (
+                  <button key={i} onClick={() => setActiveAccount(i)} style={{
+                    width: i === activeAccount ? '22px' : '7px', height: '7px',
+                    borderRadius: '4px',
+                    background: i === activeAccount ? (accounts[i].gradient?.[0] ?? '#6366f1') : 'rgba(255,255,255,0.15)',
+                    border: 'none', cursor: 'pointer', transition: 'all 0.3s', padding: 0,
+                  }} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div style={{ padding: '20px', color: '#64748b' }}>No accounts found.</div>
+          )}
         </div>
 
         {/* Spending bar chart */}
@@ -367,7 +398,13 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
             </button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {recent.map(t => <TransactionItem key={t.id} transaction={t} />)}
+            {loading ? (
+              <div style={{ padding: '20px', color: '#64748b' }}>Loading transactions...</div>
+            ) : transactions.length > 0 ? (
+              transactions.map(t => <TransactionItem key={t.id} transaction={t} />)
+            ) : (
+              <div style={{ padding: '20px', color: '#64748b' }}>No recent transactions.</div>
+            )}
           </div>
         </div>
       </div>

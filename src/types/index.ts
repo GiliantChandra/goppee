@@ -1,4 +1,5 @@
-export type PageName = 'login' | 'dashboard' | 'transfer' | 'transactions' | 'cards' | 'settings' | 'loans' | 'investments';
+export type PageName = 'login' | 'dashboard' | 'transfer' | 'transactions' | 'cards' | 'settings' | 'loans' | 'investments' | 'pockets' | 'valas' | 'topup';
+
 
 export interface User {
   id: string;

@@ -1,4 +1,4 @@
-import type { Transaction } from '../types';
+import type { Transaction } from '../services/transaction.service';
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -22,7 +22,8 @@ const statusConfig: Record<string, { color: string; label: string }> = {
   failed:    { color: '#ef4444', label: 'Failed' },
 };
 
-function formatAmount(amount: number): string {
+function formatAmount(amountStr: string | number): string {
+  const amount = typeof amountStr === 'string' ? parseInt(amountStr, 10) : amountStr;
   return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(amount);
 }
 
@@ -33,8 +34,9 @@ function formatDate(dateStr: string): string {
 }
 
 export default function TransactionItem({ transaction }: TransactionItemProps) {
-  const cat = categoryConfig[transaction.category] ?? categoryConfig.transfer;
-  const status = statusConfig[transaction.status];
+  const cat = categoryConfig[transaction.category?.toLowerCase()] ?? categoryConfig.transfer;
+  const status = statusConfig[transaction.status?.toLowerCase()] ?? statusConfig.completed;
+  const isCredit = transaction.type === 'CREDIT' || transaction.type === 'TOPUP';
 
   return (
     <div
@@ -78,7 +80,7 @@ export default function TransactionItem({ transaction }: TransactionItemProps) {
 
       {/* Date */}
       <div style={{ fontSize: '12px', color: '#475569', textAlign: 'right', flexShrink: 0 }}>
-        {formatDate(transaction.date)}
+        {formatDate(transaction.createdAt)}
       </div>
 
       {/* Status dot */}
@@ -91,10 +93,10 @@ export default function TransactionItem({ transaction }: TransactionItemProps) {
       {/* Amount */}
       <div style={{
         fontSize: '15px', fontWeight: 700, flexShrink: 0,
-        color: transaction.type === 'credit' ? '#10b981' : '#f8fafc',
+        color: isCredit ? '#10b981' : '#f8fafc',
         textAlign: 'right', minWidth: '120px',
       }}>
-        {transaction.type === 'credit' ? '+' : '-'}
+        {isCredit ? '+' : '-'}
         Rp {formatAmount(transaction.amount)}
       </div>
     </div>

@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import TransactionItem from '../components/TransactionItem';
-import { mockTransactions, categorySpending } from '../data/mockData';
+import { categorySpending } from '../data/mockData';
+import { getTransactions, type Transaction } from '../services/transaction.service';
 import type { TransactionCategory, TransactionType } from '../types';
 
 const categories: { value: TransactionCategory | 'all'; label: string; icon: string }[] = [
@@ -26,10 +27,10 @@ function formatDateLabel(dateStr: string): string {
   return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
-function groupByDate(txns: typeof mockTransactions) {
-  const groups: { label: string; items: typeof mockTransactions }[] = [];
+function groupByDate(txns: Transaction[]) {
+  const groups: { label: string; items: Transaction[] }[] = [];
   txns.forEach(t => {
-    const label = formatDateLabel(t.date);
+    const label = formatDateLabel(t.createdAt);
     const g = groups.find(g => g.label === label);
     if (g) g.items.push(t);
     else groups.push({ label, items: [t] });
@@ -42,26 +43,37 @@ export default function TransactionsPage() {
   const [category, setCategory] = useState<TransactionCategory | 'all'>('all');
   const [type, setType] = useState<TransactionType | 'all'>('all');
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
+  
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getTransactions().then(res => {
+      setTransactions(res.transactions);
+      setLoading(false);
+    }).catch(console.error);
+  }, []);
 
   const filtered = useMemo(() => {
-    return mockTransactions.filter(t => {
-      const matchSearch = t.title.toLowerCase().includes(search.toLowerCase()) || t.subtitle.toLowerCase().includes(search.toLowerCase());
+    return transactions.filter(t => {
+      const matchSearch = t.title.toLowerCase().includes(search.toLowerCase()) || (t.subtitle?.toLowerCase() || '').includes(search.toLowerCase());
       const matchCat = category === 'all' || t.category === category;
-      const matchType = type === 'all' || t.type === type;
+      const tType = (t.type === 'CREDIT' || t.type === 'TOPUP') ? 'credit' : 'debit';
+      const matchType = type === 'all' || tType === type;
       return matchSearch && matchCat && matchType;
     }).sort((a, b) => sortDir === 'desc'
-      ? new Date(b.date).getTime() - new Date(a.date).getTime()
-      : new Date(a.date).getTime() - new Date(b.date).getTime()
+      ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
-  }, [search, category, type, sortDir]);
+  }, [search, category, type, sortDir, transactions]);
 
   const grouped = useMemo(() => groupByDate(filtered), [filtered]);
-  const totalDebit = filtered.filter(t => t.type === 'debit').reduce((s, t) => s + t.amount, 0);
-  const totalCredit = filtered.filter(t => t.type === 'credit').reduce((s, t) => s + t.amount, 0);
+  const totalDebit = filtered.filter(t => t.type !== 'CREDIT' && t.type !== 'TOPUP').reduce((s, t) => s + parseInt(t.amount, 10), 0);
+  const totalCredit = filtered.filter(t => t.type === 'CREDIT' || t.type === 'TOPUP').reduce((s, t) => s + parseInt(t.amount, 10), 0);
 
   function exportCSV() {
     const rows = ['Date,Title,Category,Type,Amount,Status', ...filtered.map(t =>
-      `${new Date(t.date).toLocaleDateString()},${t.title},${t.category},${t.type},${t.amount},${t.status}`
+      `${new Date(t.createdAt).toLocaleDateString()},${t.title},${t.category},${t.type},${t.amount},${t.status}`
     )];
     const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'transactions.csv'; a.click();
@@ -214,7 +226,11 @@ export default function TransactionsPage() {
           </button>
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '56px', color: '#64748b' }}>
+            Loading transactions...
+          </div>
+        ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '56px', color: '#64748b' }}>
             <div style={{ fontSize: '52px', marginBottom: '16px' }}>🔍</div>
             <div style={{ fontSize: '16px', fontWeight: 600, color: '#94a3b8' }}>No transactions found</div>

@@ -1,0 +1,197 @@
+// Prisma Schema for NovaPay Banking System
+// All sensitive secrets are loaded from environment variables, never hardcoded.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── User & Auth ─────────────────────────────────────────────────────────────
+
+model User {
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  name                String
+  phone               String?
+  passwordHash        String    // bcrypt, cost=12
+  pinHash             String?   // bcrypt — never returned to client
+  failedLoginAttempts Int       @default(0)
+  lockedAt            DateTime? // set when failedLoginAttempts >= MAX
+  twoFaEnabled        Boolean   @default(false)
+  memberSince         DateTime  @default(now())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  accounts      Account[]
+  pockets       Pocket[]
+  valasAccounts ValasAccount[]
+  transactions  Transaction[]
+  topupRequests TopupRequest[]
+  auditLogs     AuditLog[]
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique // bcrypt hash — raw token never stored
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Accounts & Pockets ───────────────────────────────────────────────────────
+
+model Account {
+  id                  String      @id @default(cuid())
+  userId              String
+  type                AccountType
+  label               String
+  balance             BigInt      @default(0) // stored in IDR (integer, no cents)
+  currency            String      @default("IDR")
+  accountNumber       String      @unique
+  cardNumberMasked    String      // e.g. "4532 •••• •••• 8821"
+  cardNumberEncrypted String?     // AES-256-GCM encrypted full number
+  expiryDate          String
+  cvvEncrypted        String?     // AES-256-GCM encrypted
+  gradient            String[]    // [colorA, colorB]
+  isActive            Boolean     @default(true)
+  isFrozen            Boolean     @default(false)
+  dailyTransferLimit  BigInt      @default(50000000)
+  onlinePurchaseLimit BigInt      @default(10000000)
+  atmWithdrawalLimit  BigInt      @default(5000000)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sentTransactions     Transaction[] @relation("FromAccount")
+  receivedTransactions Transaction[] @relation("ToAccount")
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  INVESTMENT
+}
+
+model Pocket {
+  id         String    @id @default(cuid())
+  userId     String
+  accountId  String    // parent main account
+  name       String
+  emoji      String    @default("💰")
+  color      String    @default("#6366f1")
+  balance    BigInt    @default(0)
+  goalAmount BigInt?
+  goalDate   DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Foreign Currency (Valas) ─────────────────────────────────────────────────
+
+model ValasAccount {
+  id        String   @id @default(cuid())
+  userId    String
+  currency  String   // USD, SGD, EUR, JPY, GBP, SAR
+  balance   Decimal  @default(0) @db.Decimal(20, 6)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, currency])
+}
+
+model ExchangeRate {
+  id        String   @id @default(cuid())
+  currency  String   @unique // USD, SGD, EUR, JPY, GBP, SAR
+  rateToIdr Decimal  @db.Decimal(18, 4) // 1 foreign unit = rateToIdr IDR
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+// ─── Transactions ─────────────────────────────────────────────────────────────
+
+model Transaction {
+  id             String            @id @default(cuid())
+  userId         String
+  fromAccountId  String?
+  toAccountId    String?
+  amount         BigInt            // always positive; type determines direction
+  type           TransactionType
+  category       String
+  title          String
+  subtitle       String?
+  status         TransactionStatus @default(COMPLETED)
+  idempotencyKey String            @unique // UUID prevents duplicate submissions
+  note           String?
+  metadata       Json?             // flexible extra data (e.g. valas conversion details)
+  createdAt      DateTime          @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  fromAccount Account? @relation("FromAccount", fields: [fromAccountId], references: [id])
+  toAccount   Account? @relation("ToAccount", fields: [toAccountId], references: [id])
+}
+
+enum TransactionType {
+  DEBIT
+  CREDIT
+  TRANSFER
+  TOPUP
+  VALAS_CONVERT
+  POCKET_TRANSFER
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REVERSED
+}
+
+// ─── Top-Up ────────────────────────────────────────────────────────────────────
+
+model TopupRequest {
+  id         String      @id @default(cuid())
+  userId     String
+  accountId  String
+  amount     BigInt
+  method     String      // VIRTUAL_ACCOUNT, BANK_TRANSFER, CREDIT_CARD
+  otpHash    String      // bcrypt hash of the 6-digit OTP
+  expiresAt  DateTime
+  attempts   Int         @default(0)
+  status     TopupStatus @default(PENDING)
+  createdAt  DateTime    @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum TopupStatus {
+  PENDING
+  COMPLETED
+  EXPIRED
+  FAILED
+}
+
+// ─── Audit Log ─────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String   // LOGIN, LOGOUT, TRANSFER, TOPUP, PIN_CHANGE, etc.
+  details   Json?    // relevant context (amount, targetAccount, etc.)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+}
