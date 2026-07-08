@@ -1,11 +1,20 @@
-import { useState } from 'react';
-import { mockUser } from '../data/mockData';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function SettingsPage() {
-  const [name, setName] = useState(mockUser.name);
-  const [email, setEmail] = useState(mockUser.email);
-  const [phone, setPhone] = useState(mockUser.phone);
+  const { user } = useAuth();
+  const [name, setName] = useState(user?.name ?? '');
+  const [email, setEmail] = useState(user?.email ?? '');
+  const [phone, setPhone] = useState(user?.phone ?? '');
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name);
+      setEmail(user.email);
+      setPhone(user.phone ?? '');
+    }
+  }, [user]);
 
   const [notifications, setNotifications] = useState({
     transactions: true,
@@ -71,10 +80,10 @@ export default function SettingsPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '24px', fontWeight: 800, color: 'white',
               boxShadow: '0 8px 24px rgba(99,102,241,0.4)',
-            }}>AP</div>
+            }}>{user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() ?? 'U'}</div>
             <div>
               <div style={{ fontSize: '16px', fontWeight: 700, color: '#f8fafc' }}>{name}</div>
-              <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '8px' }}>Member since {mockUser.joinDate}</div>
+              <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '8px' }}>Active Member</div>
               <button style={{
                 padding: '6px 14px', borderRadius: '8px', fontSize: '12px',
                 background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)',

@@ -5,6 +5,7 @@ import SpendingChart from '../components/SpendingChart';
 import { mockSpending, mockGoals, categorySpending } from '../data/mockData';
 import { getAccounts, type Account } from '../services/account.service';
 import { getTransactions, type Transaction } from '../services/transaction.service';
+import { useAuth } from '../contexts/AuthContext';
 import type { PageName } from '../types';
 
 interface DashboardPageProps {
@@ -190,6 +191,7 @@ const quickActions = [
 ];
 
 export default function DashboardPage({ onNavigate }: DashboardPageProps) {
+  const { user } = useAuth();
   const [activeAccount, setActiveAccount] = useState(0);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -227,8 +229,8 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
       {/* Greeting */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#f8fafc', margin: 0, letterSpacing: '-0.5px' }}>
-            {getGreeting()}, Arjuna 👋
+          <h2 style={{ fontSize: '28px', fontWeight: 800, color: '#f8fafc', margin: '0 0 6px', letterSpacing: '-0.5px' }}>
+            {getGreeting()}, {user?.name?.split(' ')[0] ?? 'User'} 👋
           </h2>
           <p style={{ fontSize: '13px', color: '#64748b', margin: '3px 0 0' }}>
             Here's your financial overview for today.

@@ -1,4 +1,5 @@
 import type { Account } from '../services/account.service';
+import { useAuth } from '../contexts/AuthContext';
 
 interface AccountCardProps {
   account: Account;
@@ -13,6 +14,7 @@ function formatBalance(amountStr: number | string): string {
 }
 
 export default function AccountCard({ account, active = false, onClick, size = 'large' }: AccountCardProps) {
+  const { user } = useAuth();
   const isLarge = size === 'large';
 
   return (
@@ -106,7 +108,7 @@ export default function AccountCard({ account, active = false, onClick, size = '
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: isLarge ? '20px' : '12px', position: 'relative' }}>
         <div>
           <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Card Holder</div>
-          <div style={{ fontSize: isLarge ? '13px' : '11px', color: 'white', fontWeight: 600, marginTop: '2px' }}>Arjuna Pratama</div>
+          <div style={{ fontSize: isLarge ? '13px' : '11px', color: 'white', fontWeight: 600, marginTop: '2px' }}>{user?.name ?? 'Card Holder'}</div>
         </div>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Expires</div>

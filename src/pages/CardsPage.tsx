@@ -1,14 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AccountCard from '../components/AccountCard';
-import { mockAccounts } from '../data/mockData';
+import { getAccounts, type Account } from '../services/account.service';
 
 export default function CardsPage() {
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
   const [frozenCards, setFrozenCards] = useState<Set<string>>(new Set());
 
-  const card = mockAccounts[selectedCard];
-  const isFrozen = frozenCards.has(card.id);
+  useEffect(() => {
+    getAccounts()
+      .then(setAccounts)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const card = accounts[selectedCard];
+  const isFrozen = card ? frozenCards.has(card.id) : false;
 
   function toggleFreeze() {
     setFrozenCards(prev => {
@@ -34,18 +43,26 @@ export default function CardsPage() {
     { label: 'ATM Withdrawal', used: 500_000, total: 5_000_000, color: '#f59e0b' },
   ];
 
+  if (loading) {
+    return <div style={{ padding: '40px', color: '#64748b' }}>Loading...</div>;
+  }
+
+  if (accounts.length === 0) {
+    return <div style={{ padding: '40px', color: '#64748b' }}>No accounts found.</div>;
+  }
+
   return (
     <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.4s ease' }}>
       {/* Card tabs */}
       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-        {mockAccounts.map((acc, i) => (
+        {accounts.map((acc, i) => (
           <button
             key={acc.id}
             onClick={() => { setSelectedCard(i); setShowDetails(false); }}
             style={{
               padding: '8px 16px', borderRadius: '10px', fontSize: '13px', fontWeight: 600,
-              background: selectedCard === i ? `${acc.gradient[0]}22` : 'rgba(255,255,255,0.03)',
-              border: selectedCard === i ? `1px solid ${acc.gradient[0]}66` : '1px solid rgba(255,255,255,0.06)',
+              background: selectedCard === i ? `${acc.gradient?.[0] ?? '#6366f1'}22` : 'rgba(255,255,255,0.03)',
+              border: selectedCard === i ? `1px solid ${acc.gradient?.[0] ?? '#6366f1'}66` : '1px solid rgba(255,255,255,0.06)',
               color: selectedCard === i ? '#f8fafc' : '#64748b',
               cursor: 'pointer', transition: 'all 0.2s',
             }}
@@ -63,7 +80,7 @@ export default function CardsPage() {
             borderRadius: '20px', padding: '28px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px',
           }}>
             <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
-              <AccountCard account={mockAccounts[selectedCard] as any} active size="large" />
+              <AccountCard account={accounts[selectedCard]} active size="large" />
               {isFrozen && (
                 <div style={{
                   position: 'absolute', inset: 0, borderRadius: '24px',
@@ -87,7 +104,7 @@ export default function CardsPage() {
               {[
                 { label: 'Account No.', value: card.accountNumber },
                 { label: 'Expiry', value: card.expiryDate },
-                { label: 'CVV', value: card.cvv },
+                { label: 'CVV', value: '***' },
               ].map(({ label, value }) => (
                 <div key={label} style={{
                   background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '12px',
@@ -137,7 +154,7 @@ export default function CardsPage() {
           }}>
             <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#f8fafc', margin: '0 0 16px' }}>Balance Details</h3>
             {[
-              { label: 'Available Balance', value: `Rp ${new Intl.NumberFormat('id-ID').format(card.balance)}`, color: '#10b981' },
+              { label: 'Available Balance', value: `Rp ${new Intl.NumberFormat('id-ID').format(parseInt(card.balance, 10))}`, color: '#10b981' },
               { label: 'Pending Transactions', value: 'Rp 673.000', color: '#f59e0b' },
               { label: 'Reserved Funds', value: 'Rp 500.000', color: '#64748b' },
             ].map(({ label, value, color }) => (
