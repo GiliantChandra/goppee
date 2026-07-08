@@ -1,4 +1,4 @@
-import type { Account } from '../types';
+import type { Account } from '../services/account.service';
 
 interface AccountCardProps {
   account: Account;
@@ -7,7 +7,8 @@ interface AccountCardProps {
   size?: 'large' | 'small';
 }
 
-function formatBalance(amount: number): string {
+function formatBalance(amountStr: number | string): string {
+  const amount = typeof amountStr === 'string' ? parseInt(amountStr, 10) : amountStr;
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 }
 
@@ -98,7 +99,7 @@ export default function AccountCard({ account, active = false, onClick, size = '
         marginTop: isLarge ? '24px' : '14px',
         position: 'relative',
       }}>
-        {account.cardNumber}
+        {account.cardNumberMasked || '**** **** **** 1234'}
       </div>
 
       {/* Bottom row */}
@@ -109,7 +110,7 @@ export default function AccountCard({ account, active = false, onClick, size = '
         </div>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Expires</div>
-          <div style={{ fontSize: isLarge ? '13px' : '11px', color: 'white', fontWeight: 600, marginTop: '2px' }}>{account.expiryDate}</div>
+          <div style={{ fontSize: isLarge ? '13px' : '11px', color: 'white', fontWeight: 600, marginTop: '2px' }}>{account.expiryDate || '12/28'}</div>
         </div>
         {/* Mastercard logo */}
         <div style={{ display: 'flex' }}>

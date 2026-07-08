@@ -63,7 +63,7 @@ export default function CardsPage() {
             borderRadius: '20px', padding: '28px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px',
           }}>
             <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
-              <AccountCard account={card} size="large" active />
+              <AccountCard account={mockAccounts[selectedCard] as any} active size="large" />
               {isFrozen && (
                 <div style={{
                   position: 'absolute', inset: 0, borderRadius: '24px',

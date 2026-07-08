@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getPockets, createPocket, updatePocket, deletePocket, type Pocket } from '../services/pocket.service';
+import { getPockets, createPocket, deletePocket, type Pocket } from '../services/pocket.service';
 import { getAccounts, type Account } from '../services/account.service';
 import { pocketDeposit, pocketWithdraw } from '../services/transaction.service';
 import { getApiError } from '../services/api';

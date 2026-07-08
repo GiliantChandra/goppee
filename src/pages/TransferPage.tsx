@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AccountCard from '../components/AccountCard';
 import { getAccounts, type Account } from '../services/account.service';
 import { createTransfer } from '../services/transaction.service';
@@ -10,8 +10,6 @@ import type { Contact } from '../types';
 // PIN Modal
 function PinModal({ onConfirm, onCancel, error }: { onConfirm: (pin: string) => void; onCancel: () => void; error?: string }) {
   const [pin, setPin] = useState('');
-  const [shake, setShake] = useState(false);
-  const correctPin = '1234';
 
   function handleKey(k: string) {
     if (pin.length >= 6) return;
@@ -48,10 +46,8 @@ function PinModal({ onConfirm, onCancel, error }: { onConfirm: (pin: string) => 
           {error && <div style={{ fontSize: '13px', color: '#ef4444', marginTop: '8px' }}>{error}</div>}
         </div>
 
-        {/* PIN dots */}
         <div style={{
           display: 'flex', justifyContent: 'center', gap: '14px', marginBottom: '28px',
-          animation: shake ? 'shake 0.5s ease' : 'none',
         }}>
           {[0, 1, 2, 3, 4, 5].map(i => (
             <div key={i} style={{
@@ -104,7 +100,7 @@ function PinModal({ onConfirm, onCancel, error }: { onConfirm: (pin: string) => 
 
 export default function TransferPage() {
   const [step, setStep] = useState<'form' | 'confirm' | 'pin' | 'success'>('form');
-  const [fromAcc, setFromAcc] = useState(mockAccounts[0].id);
+  const [fromAcc, setFromAcc] = useState('');
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
@@ -114,7 +110,6 @@ export default function TransferPage() {
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
-  const [transferring, setTransferring] = useState(false);
   const [error, setError] = useState('');
   
   useEffect(() => {
@@ -130,7 +125,6 @@ export default function TransferPage() {
 
   async function handleConfirmPin(pin: string) {
     if (!from) return;
-    setTransferring(true);
     setError('');
     try {
       const numAmount = parseInt(amount.replace(/\D/g, ''), 10);
@@ -147,8 +141,6 @@ export default function TransferPage() {
     } catch (err) {
       setError(getApiError(err));
       // stay on PIN step to let them retry or cancel
-    } finally {
-      setTransferring(false);
     }
   }
 

@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 
 // Axios instance pointing to the Vite-proxied backend
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api',
   withCredentials: true, // send HttpOnly cookies
   headers: { 'Content-Type': 'application/json' },
   timeout: 10000,
@@ -40,7 +40,8 @@ api.interceptors.response.use(
 
       isRefreshing = true;
       try {
-        const refreshRes = await axios.post('/api/auth/refresh', {}, { withCredentials: true });
+        const refreshUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/auth/refresh` : '/api/auth/refresh';
+        const refreshRes = await axios.post(refreshUrl, {}, { withCredentials: true });
         const newToken = refreshRes.data.accessToken;
         localStorage.setItem('accessToken', newToken);
         refreshQueue.forEach(cb => cb(newToken));

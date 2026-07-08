@@ -84,7 +84,7 @@ function NavButton({ page, label, icon, badge, active, collapsed, onNavigate }: 
 export default function Sidebar({ currentPage, onNavigate, collapsed, onToggle }: SidebarProps) {
   const { user } = useAuth();
   const initials = user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() ?? 'NP';
-  const displayName = user?.name?.split(' ')[0] + ' ' + (user?.name?.split(' ')[1]?.[0] ?? '') + '.' ?? 'User';
+  const displayName = user?.name ? `${user.name.split(' ')[0]} ${user.name.split(' ')[1]?.[0] ?? ''}.` : 'User';
   return (
     <aside
       style={{
