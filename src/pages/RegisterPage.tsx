@@ -24,9 +24,9 @@ export default function RegisterPage({ onSwitch }: RegisterPageProps) {
   // Password Validation
   const hasMinLength = password.length >= 8;
   const hasNumber = /\d/.test(password);
-  const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  const hasUppercase = /[A-Z]/.test(password);
   
-  const isPasswordValid = hasMinLength && hasNumber && hasSymbol;
+  const isPasswordValid = hasMinLength && hasNumber && hasUppercase;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -203,11 +203,11 @@ export default function RegisterPage({ onSwitch }: RegisterPageProps) {
                   </div>
                   Contains at least one number
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: password.length === 0 ? '#64748b' : (hasSymbol ? '#10b981' : '#f43f5e'), transition: 'color 0.2s' }}>
-                  <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: password.length === 0 ? '#334155' : (hasSymbol ? 'rgba(16,185,129,0.2)' : 'rgba(244,63,94,0.2)'), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: password.length === 0 ? '#64748b' : (hasUppercase ? '#10b981' : '#f43f5e'), transition: 'color 0.2s' }}>
+                  <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: password.length === 0 ? '#334155' : (hasUppercase ? 'rgba(16,185,129,0.2)' : 'rgba(244,63,94,0.2)'), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
                   </div>
-                  Contains at least one symbol (e.g. !@#$%)
+                  Contains at least one uppercase letter
                 </div>
               </div>
             </div>
@@ -246,7 +246,7 @@ export default function RegisterPage({ onSwitch }: RegisterPageProps) {
 
           <div style={{ marginTop: '32px', textAlign: 'center', fontSize: '14px', color: '#94a3b8' }}>
             Already have an account?{' '}
-            <button onClick={onSwitch} style={{
+            <button type="button" onClick={onSwitch} style={{
               background: 'none', border: 'none', color: '#f8fafc', fontWeight: 600, cursor: 'pointer', padding: 0, fontSize: '14px', transition: 'color 0.2s', textDecoration: 'underline'
             }} onMouseOver={e => e.currentTarget.style.color = '#ec4899'} onMouseOut={e => e.currentTarget.style.color = '#f8fafc'}>
               Sign in

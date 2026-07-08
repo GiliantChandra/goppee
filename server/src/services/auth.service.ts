@@ -20,6 +20,44 @@ export async function register(email: string, password: string, name: string, ph
   const user = await prisma.user.create({
     data: { email, name, phone, passwordHash },
   });
+
+  // Create default IDR Checking Account
+  const mainAccount = await prisma.account.create({
+    data: {
+      userId: user.id,
+      type: 'CHECKING',
+      label: 'Main Account',
+      balance: 1000000, // Give them 1M IDR for demo purposes
+      currency: 'IDR',
+      accountNumber: Math.floor(Math.random() * 10000000000).toString().padStart(10, '0'),
+      cardNumberMasked: `4532 •••• •••• ${Math.floor(1000 + Math.random() * 9000)}`,
+      expiryDate: '12/28',
+      gradient: ['#6366f1', '#a855f7'],
+    }
+  });
+
+  // Create a default Pocket
+  await prisma.pocket.create({
+    data: {
+      userId: user.id,
+      accountId: mainAccount.id,
+      name: 'Vacation Fund',
+      emoji: '🏖️',
+      color: '#ec4899',
+      balance: 0,
+      goalAmount: 5000000,
+    }
+  });
+
+  // Create default USD Valas Account
+  await prisma.valasAccount.create({
+    data: {
+      userId: user.id,
+      currency: 'USD',
+      balance: 100, // Give them 100 USD demo
+    }
+  });
+
   return { id: user.id, email: user.email, name: user.name };
 }
 

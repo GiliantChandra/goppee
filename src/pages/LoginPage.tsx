@@ -182,7 +182,7 @@ export default function LoginPage({ onSwitch }: LoginPageProps) {
 
           <div style={{ marginTop: '32px', textAlign: 'center', fontSize: '14px', color: '#94a3b8' }}>
             Don't have an account?{' '}
-            <button onClick={onSwitch} style={{
+            <button type="button" onClick={onSwitch} style={{
               background: 'none', border: 'none', color: '#f8fafc', fontWeight: 600, cursor: 'pointer', padding: 0, fontSize: '14px', transition: 'color 0.2s', textDecoration: 'underline'
             }} onMouseOver={e => e.currentTarget.style.color = '#6366f1'} onMouseOut={e => e.currentTarget.style.color = '#f8fafc'}>
               Sign up now
