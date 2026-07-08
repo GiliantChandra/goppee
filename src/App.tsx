@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import TransferPage from './pages/TransferPage';
 import TransactionsPage from './pages/TransactionsPage';
@@ -19,6 +20,7 @@ function AppInner() {
   const { isAuthenticated, isLoading, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState<PageName>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
   // Loading state while restoring session from stored token
   if (isLoading) {
@@ -38,7 +40,8 @@ function AppInner() {
   }
 
   if (!isAuthenticated) {
-    return <LoginPage />;
+    if (authMode === 'login') return <LoginPage onSwitch={() => setAuthMode('register')} />;
+    return <RegisterPage onSwitch={() => setAuthMode('login')} />;
   }
 
   function renderPage() {

@@ -13,6 +13,7 @@ interface AuthContextValue {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string, phone?: string) => Promise<void>;
   logout: () => Promise<void>;
   error: string | null;
   clearError: () => void;
@@ -66,6 +67,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const register = useCallback(async (name: string, email: string, password: string, phone?: string) => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      // the auth.service.ts register might not login automatically, let's check its response.
+      // Wait, let's look at what register does. It returns res.data but doesn't set accessToken.
+      // So we must login after register.
+      await authService.register(email, password, name, phone);
+      await authService.login(email, password);
+      const me = await authService.getMe();
+      setUser(me);
+    } catch (err) {
+      setError(getApiError(err));
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     await authService.logout();
     setUser(null);
@@ -79,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       isAuthenticated: !!user,
       login,
+      register,
       logout,
       error,
       clearError,
