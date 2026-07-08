@@ -39,7 +39,7 @@ app.use(helmet({
 
 // ─── CORS ──────────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: config.CORS_ORIGIN,
+  origin: true, // Automatically reflect the request origin (solves Vercel/Render CORS issues)
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
