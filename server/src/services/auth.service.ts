@@ -17,8 +17,10 @@ export async function register(email: string, password: string, name: string, ph
   if (existing) throw new Error('EMAIL_TAKEN');
 
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+  const pinHash = await bcrypt.hash('123456', BCRYPT_ROUNDS); // Default PIN for demo users
+  
   const user = await prisma.user.create({
-    data: { email, name, phone, passwordHash },
+    data: { email, name, phone, passwordHash, pinHash },
   });
 
   // Create default IDR Checking Account
