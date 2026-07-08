@@ -57,7 +57,7 @@ export default function RegisterPage({ onSwitch }: RegisterPageProps) {
       
       {/* Left side: Beautiful branding showcase */}
       <div style={{
-        flex: 1, display: 'none', '@media (min-width: 1024px)': { display: 'flex' },
+        flex: 1, display: 'none',
         flexDirection: 'column', padding: '60px', position: 'relative', overflow: 'hidden',
         background: 'linear-gradient(135deg, #0f172a 0%, #020617 100%)',
         borderRight: '1px solid rgba(255,255,255,0.05)'
