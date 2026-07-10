@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { PageName } from './types';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
+import MobileNav from './components/MobileNav';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
@@ -16,11 +17,22 @@ import PocketsPage from './pages/PocketsPage';
 import ValasPage from './pages/ValasPage';
 import TopUpPage from './pages/TopUpPage';
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return isMobile;
+}
+
 function AppInner() {
   const { isAuthenticated, isLoading, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState<PageName>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const isMobile = useIsMobile();
 
   // Loading state while restoring session from stored token
   if (isLoading) {
@@ -60,6 +72,26 @@ function AppInner() {
     }
   }
 
+  if (isMobile) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#020617' }}>
+        {/* Mobile Header (simplified) */}
+        <Header
+          currentPage={currentPage}
+          onNavigate={setCurrentPage}
+          onLogout={logout}
+          isMobile={true}
+        />
+        {/* Page content - padded for bottom nav */}
+        <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', paddingBottom: '72px' }}>
+          {renderPage()}
+        </main>
+        {/* Bottom navigation bar */}
+        <MobileNav currentPage={currentPage} onNavigate={setCurrentPage} onLogout={logout} />
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#020617' }}>
       <Sidebar
@@ -73,6 +105,7 @@ function AppInner() {
           currentPage={currentPage}
           onNavigate={setCurrentPage}
           onLogout={logout}
+          isMobile={false}
         />
         <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
           {renderPage()}

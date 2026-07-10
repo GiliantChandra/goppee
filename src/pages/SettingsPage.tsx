@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [name, setName] = useState(user?.name ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
@@ -241,6 +241,33 @@ export default function SettingsPage() {
             color: '#a5b4fc', cursor: 'pointer',
           }}>Update</button>
         </div>
+      </div>
+
+      {/* Logout button - visible on mobile */}
+      <div style={{
+        background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: '20px', padding: '24px',
+      }}>
+        <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#f8fafc', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          🔴 Danger Zone
+        </h3>
+        <button
+          onClick={logout}
+          style={{
+            width: '100%', padding: '14px', borderRadius: '12px',
+            background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',
+            color: '#f87171', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.2)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.1)')}
+        >
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Logout dari NovaPay
+        </button>
       </div>
 
       <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }`}</style>
