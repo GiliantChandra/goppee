@@ -273,8 +273,8 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
           background: 'var(--bg-surface)', border: '1px solid var(--border)',
           borderRadius: '20px', padding: '22px', position: 'relative', overflow: 'hidden',
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', margin: 0 }}>My Accounts</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>My Accounts</h3>
             <button onClick={() => onNavigate('cards')} style={{ fontSize: '12px', color: '#6366f1', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
               View all →
             </button>

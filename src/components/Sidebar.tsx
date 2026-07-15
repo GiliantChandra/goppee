@@ -38,10 +38,8 @@ function NavButton({ page, label, icon, badge, active, collapsed, onNavigate }: 
         padding: collapsed ? '12px' : '11px 14px',
         justifyContent: collapsed ? 'center' : 'flex-start',
         borderRadius: '12px', border: 'none', cursor: 'pointer',
-        background: active
-          ? 'linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.15))'
-          : 'transparent',
-        color: active ? '#a5b4fc' : 'var(--text-muted)',
+        background: active ? 'var(--nav-active-bg)' : 'transparent',
+        color: active ? 'var(--nav-active-color)' : 'var(--text-muted)',
         transition: 'all 0.2s',
         width: '100%', textAlign: 'left', whiteSpace: 'nowrap',
         position: 'relative',

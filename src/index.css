@@ -20,6 +20,8 @@
   --input-bg:       rgba(255,255,255,0.05);
   --input-border:   rgba(99,102,241,0.15);
   --scrollbar:      rgba(99,102,241,0.3);
+  --nav-active-bg:  linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.15));
+  --nav-active-color: #a5b4fc;
 }
 
 [data-theme="light"] {
@@ -38,6 +40,8 @@
   --input-bg:       rgba(0,0,0,0.04);
   --input-border:   rgba(99,102,241,0.3);
   --scrollbar:      rgba(99,102,241,0.25);
+  --nav-active-bg:  linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1));
+  --nav-active-color: #4f46e5;
 }
 
 /* ════════════════════════════════════════════════════════════
