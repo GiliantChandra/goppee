@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { PageName } from './types';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import MobileNav from './components/MobileNav';
@@ -74,26 +75,24 @@ function AppInner() {
 
   if (isMobile) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#020617' }}>
-        {/* Mobile Header (simplified) */}
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-base)', overflowX: 'hidden' }}>
         <Header
           currentPage={currentPage}
           onNavigate={setCurrentPage}
           onLogout={logout}
           isMobile={true}
         />
-        {/* Page content - padded for bottom nav */}
-        <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', paddingBottom: '72px' }}>
+        {/* Page content - padded for bottom nav, strict overflow control */}
+        <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', paddingBottom: '80px', width: '100%', maxWidth: '100vw' }}>
           {renderPage()}
         </main>
-        {/* Bottom navigation bar */}
         <MobileNav currentPage={currentPage} onNavigate={setCurrentPage} onLogout={logout} />
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#020617' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-base)' }}>
       <Sidebar
         currentPage={currentPage}
         onNavigate={setCurrentPage}
@@ -117,8 +116,10 @@ function AppInner() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppInner />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppInner />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

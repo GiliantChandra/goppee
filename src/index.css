@@ -1,45 +1,82 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
+/* ════════════════════════════════════════════════════════════
+   THEME VARIABLES  (dark = default)
+   ════════════════════════════════════════════════════════════ */
+:root,
+[data-theme="dark"] {
+  --bg-base:        #020617;
+  --bg-surface:     rgba(255,255,255,0.02);
+  --bg-surface-2:   rgba(255,255,255,0.04);
+  --bg-surface-3:   rgba(255,255,255,0.07);
+  --border:         rgba(255,255,255,0.06);
+  --border-accent:  rgba(99,102,241,0.15);
+  --text-primary:   #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+  --text-faint:     #475569;
+  --sidebar-bg:     linear-gradient(180deg,#090d1a 0%,#070b14 100%);
+  --header-bg:      rgba(10,15,30,0.85);
+  --input-bg:       rgba(255,255,255,0.05);
+  --input-border:   rgba(99,102,241,0.15);
+  --scrollbar:      rgba(99,102,241,0.3);
+}
+
+[data-theme="light"] {
+  --bg-base:        #f1f5f9;
+  --bg-surface:     #ffffff;
+  --bg-surface-2:   #f8fafc;
+  --bg-surface-3:   #f0f4ff;
+  --border:         rgba(0,0,0,0.07);
+  --border-accent:  rgba(99,102,241,0.25);
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #64748b;
+  --text-faint:     #94a3b8;
+  --sidebar-bg:     linear-gradient(180deg,#ffffff 0%,#f1f5f9 100%);
+  --header-bg:      rgba(255,255,255,0.9);
+  --input-bg:       rgba(0,0,0,0.04);
+  --input-border:   rgba(99,102,241,0.3);
+  --scrollbar:      rgba(99,102,241,0.25);
+}
+
+/* ════════════════════════════════════════════════════════════
+   BASE
+   ════════════════════════════════════════════════════════════ */
 :root {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #f8fafc;
-  background-color: #020617;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
   min-width: 0;
   min-height: 100vh;
-  background: #020617;
+  background: var(--bg-base);
+  color: var(--text-primary);
   overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-#root {
-  min-height: 100vh;
-}
+#root { min-height: 100vh; }
 
 /* ─── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.5); }
 
 /* ─── Inputs ─────────────────────────────────────────────── */
-input::placeholder { color: #475569; }
+input::placeholder { color: var(--text-faint); }
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 ::selection { background: rgba(99,102,241,0.3); color: #f8fafc; }
@@ -49,7 +86,7 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 }
 
 /* ════════════════════════════════════════════════════════════
-   RESPONSIVE LAYOUT UTILITIES
+   LAYOUT GRID UTILITIES
    ════════════════════════════════════════════════════════════ */
 
 /* Stat cards row: 4 cols on desktop, 2 cols on mobile */
@@ -94,6 +131,8 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 .greeting-title { font-size: 28px; }
 
@@ -113,13 +152,30 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 }
 
 /* ════════════════════════════════════════════════════════════
+   OVERFLOW PROTECTION — prevent any child from causing
+   horizontal scroll on mobile
+   ════════════════════════════════════════════════════════════ */
+.page-padding,
+.page-padding * {
+  max-width: 100%;
+  word-break: break-word;
+}
+
+/* Account card: never wider than viewport */
+.account-card-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* ════════════════════════════════════════════════════════════
    MOBILE  (≤ 767px)
    ════════════════════════════════════════════════════════════ */
 @media (max-width: 767px) {
 
   /* Page padding */
   .page-padding {
-    padding: 16px 16px 24px;
+    padding: 14px 14px 24px;
   }
 
   /* Stat cards: 2 columns */
@@ -143,14 +199,8 @@ button:focus-visible, input:focus-visible, a:focus-visible {
     gap: 16px;
   }
 
-  /* Greeting: stack vertically, hide button on mobile (quick actions have it) */
-  .greeting-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .greeting-title { font-size: 22px; }
-  .greeting-btn { width: 100%; justify-content: center; }
+  /* Greeting: smaller text but keep button inline */
+  .greeting-title { font-size: 20px; }
 
   /* Quick actions: 2x2 grid stays the same */
   .quick-actions-grid {
@@ -163,12 +213,39 @@ button:focus-visible, input:focus-visible, a:focus-visible {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 4px;
+    flex-wrap: nowrap !important;
   }
   .card-tabs::-webkit-scrollbar { display: none; }
 
   /* Notification dropdown: full width on mobile */
   .notif-dropdown {
-    width: calc(100vw - 32px);
-    right: -60px;
+    width: calc(100vw - 32px) !important;
+    right: -60px !important;
   }
+
+  /* Goal progress bar text — make sure it wraps instead of overflowing */
+  .goal-row {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  /* Modals: full width */
+  .modal-card {
+    width: calc(100vw - 32px) !important;
+    min-width: 0 !important;
+    padding: 28px 20px !important;
+  }
+
+  /* Transfer page form: full width */
+  .transfer-form {
+    max-width: 100% !important;
+    width: 100%;
+  }
+
+  /* Tables / big containers with fixed widths → scrollable on mobile */
+  .scroll-x-mobile {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scroll-x-mobile::-webkit-scrollbar { height: 4px; }
 }

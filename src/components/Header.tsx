@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { PageName } from '../types';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { mockNotifications } from '../data/mockData';
 
 interface HeaderProps {
@@ -26,6 +27,7 @@ const pageTitles: Record<PageName, string> = {
 
 export default function Header({ currentPage, onNavigate, onLogout, isMobile = false }: HeaderProps) {
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const initials = user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() ?? 'NP';
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState(mockNotifications);
@@ -84,16 +86,32 @@ export default function Header({ currentPage, onNavigate, onLogout, isMobile = f
         </div>
       )}
 
+      {/* Theme toggle button */}
+      <button
+        onClick={toggleTheme}
+        title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        style={{
+          background: 'var(--bg-surface-2)',
+          border: '1px solid var(--border-accent)',
+          borderRadius: '10px', padding: '8px',
+          cursor: 'pointer', color: 'var(--text-secondary)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'all 0.2s', fontSize: '16px', lineHeight: 1,
+        }}
+      >
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
+
       {/* Notification bell */}
       <div style={{ position: 'relative' }}>
         <button
           onClick={() => setNotifOpen(v => !v)}
           style={{
             position: 'relative',
-            background: notifOpen ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(99,102,241,0.15)',
+            background: notifOpen ? 'rgba(99,102,241,0.15)' : 'var(--bg-surface-2)',
+            border: '1px solid var(--border-accent)',
             borderRadius: '10px', padding: '8px', cursor: 'pointer',
-            color: notifOpen ? '#a5b4fc' : '#94a3b8',
+            color: notifOpen ? '#a5b4fc' : 'var(--text-secondary)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'all 0.2s',
           }}
