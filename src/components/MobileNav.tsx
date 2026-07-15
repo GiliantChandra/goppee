@@ -5,7 +5,6 @@ import { useTheme } from '../contexts/ThemeContext';
 interface MobileNavProps {
   currentPage: PageName;
   onNavigate: (page: PageName) => void;
-  onLogout: () => void;
 }
 
 // Primary nav items shown in the bottom bar (max 5 for mobile)
@@ -17,9 +16,9 @@ const mobileNavItems: { page: PageName; label: string; icon: string }[] = [
   { page: 'settings', label: 'Profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
 ];
 
-export default function MobileNav({ currentPage, onNavigate, onLogout }: MobileNavProps) {
+export default function MobileNav({ currentPage, onNavigate }: MobileNavProps) {
   const { user } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const initials = user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() ?? 'NP';
 
   const isLight = theme === 'light';
@@ -115,38 +114,6 @@ export default function MobileNav({ currentPage, onNavigate, onLogout }: MobileN
         );
       })}
 
-      {/* Divider */}
-      <div style={{ width: '1px', height: '32px', background: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)', flexShrink: 0 }} />
-
-      {/* Theme toggle */}
-      <button
-        onClick={toggleTheme}
-        style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          gap: '3px', padding: '6px 8px', border: 'none', background: 'transparent',
-          cursor: 'pointer', flex: '0 0 auto',
-        }}
-      >
-        <span style={{ fontSize: '18px', lineHeight: 1 }}>{theme === 'dark' ? '☀️' : '🌙'}</span>
-        <span style={{ fontSize: '9px', color: isLight ? '#64748b' : '#475569', whiteSpace: 'nowrap' }}>
-          {theme === 'dark' ? 'Light' : 'Dark'}
-        </span>
-      </button>
-
-      {/* Logout button */}
-      <button
-        onClick={onLogout}
-        style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          gap: '3px', padding: '6px 8px', border: 'none', background: 'transparent',
-          cursor: 'pointer', flex: '0 0 auto',
-        }}
-      >
-        <svg width="20" height="20" fill="none" stroke="#f87171" strokeWidth="1.8" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-        </svg>
-        <span style={{ fontSize: '9px', color: '#f87171', whiteSpace: 'nowrap' }}>Logout</span>
-      </button>
     </nav>
   );
 }

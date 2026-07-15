@@ -41,7 +41,7 @@ function NavButton({ page, label, icon, badge, active, collapsed, onNavigate }: 
         background: active
           ? 'linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.15))'
           : 'transparent',
-        color: active ? '#a5b4fc' : '#64748b',
+        color: active ? '#a5b4fc' : 'var(--text-muted)',
         transition: 'all 0.2s',
         width: '100%', textAlign: 'left', whiteSpace: 'nowrap',
         position: 'relative',
@@ -50,13 +50,13 @@ function NavButton({ page, label, icon, badge, active, collapsed, onNavigate }: 
       onMouseEnter={e => {
         if (!active) {
           (e.currentTarget as HTMLButtonElement).style.background = 'rgba(99,102,241,0.08)';
-          (e.currentTarget as HTMLButtonElement).style.color = '#94a3b8';
+          (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-secondary)';
         }
       }}
       onMouseLeave={e => {
         if (!active) {
           (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-          (e.currentTarget as HTMLButtonElement).style.color = '#64748b';
+          (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)';
         }
       }}
     >
@@ -91,8 +91,8 @@ export default function Sidebar({ currentPage, onNavigate, collapsed, onToggle }
         width: collapsed ? '68px' : '235px',
         transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)',
         flexShrink: 0,
-        background: 'linear-gradient(180deg, #090d1a 0%, #070b14 100%)',
-        borderRight: '1px solid rgba(99,102,241,0.12)',
+        background: 'var(--bg-surface)',
+        borderRight: '1px solid var(--border)',
         display: 'flex', flexDirection: 'column',
         height: '100vh', position: 'sticky', top: 0, zIndex: 50,
         overflow: 'hidden',
@@ -112,7 +112,7 @@ export default function Sidebar({ currentPage, onNavigate, collapsed, onToggle }
         </div>
         {!collapsed && (
           <div>
-            <div style={{ fontSize: '18px', fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>
               NovaPay
             </div>
             <div style={{ fontSize: '10px', color: '#4f4f72', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Digital Bank</div>
@@ -140,7 +140,7 @@ export default function Sidebar({ currentPage, onNavigate, collapsed, onToggle }
       {/* Nav */}
       <nav style={{ flex: 1, padding: '12px 10px', display: 'flex', flexDirection: 'column', gap: '2px', overflowY: 'auto' }}>
         {!collapsed && (
-          <div style={{ fontSize: '10px', color: '#334155', letterSpacing: '1.2px', textTransform: 'uppercase', fontWeight: 600, padding: '4px 6px 8px', marginTop: '4px' }}>
+          <div style={{ fontSize: '10px', color: 'var(--text-muted)', letterSpacing: '1.2px', textTransform: 'uppercase', fontWeight: 600, padding: '4px 6px 8px', marginTop: '4px' }}>
             Main Menu
           </div>
         )}
@@ -155,7 +155,7 @@ export default function Sidebar({ currentPage, onNavigate, collapsed, onToggle }
         ))}
 
         {!collapsed && (
-          <div style={{ fontSize: '10px', color: '#334155', letterSpacing: '1.2px', textTransform: 'uppercase', fontWeight: 600, padding: '12px 6px 8px', marginTop: '8px' }}>
+          <div style={{ fontSize: '10px', color: 'var(--text-muted)', letterSpacing: '1.2px', textTransform: 'uppercase', fontWeight: 600, padding: '12px 6px 8px', marginTop: '8px' }}>
             Account
           </div>
         )}
@@ -194,7 +194,7 @@ export default function Sidebar({ currentPage, onNavigate, collapsed, onToggle }
           }}>{initials}</div>
           {!collapsed && (
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: '#f8fafc', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayName}</div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayName}</div>
               <div style={{ fontSize: '10px', color: '#6366f1', fontWeight: 600 }}>✦ Premium</div>
             </div>
           )}

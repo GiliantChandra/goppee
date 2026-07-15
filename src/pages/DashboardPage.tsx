@@ -31,7 +31,7 @@ function StatCard({ label, value, rawValue, delta, color, icon }: { label: strin
   const animated = useCountUp(rawValue, 1000);
   const display = rawValue > 0 ? value.replace(new Intl.NumberFormat('id-ID').format(rawValue), new Intl.NumberFormat('id-ID').format(animated)) : value;
   return (
-    <div style={{
+    <div className="stat-card" style={{
       background: `linear-gradient(135deg, rgba(${color},0.06) 0%, rgba(0,0,0,0) 100%)`,
       border: `1px solid rgba(${color},0.15)`,
       borderRadius: '18px', padding: '20px 22px',
@@ -48,8 +48,8 @@ function StatCard({ label, value, rawValue, delta, color, icon }: { label: strin
       }}
     >
       <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '60px', opacity: 0.07, pointerEvents: 'none' }}>{icon}</div>
-      <div style={{ fontSize: '12px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '10px', fontWeight: 600 }}>{label}</div>
-      <div style={{ fontSize: '20px', fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.5px' }}>{display}</div>
+      <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '10px', fontWeight: 600 }}>{label}</div>
+      <div className="stat-value" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>{display}</div>
       <div style={{ fontSize: '12px', color: `rgb(${color})`, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
         {delta}
       </div>
@@ -104,8 +104,8 @@ function DonutChart({ data }: { data: typeof categorySpending }) {
             </>
           ) : (
             <>
-              <div style={{ fontSize: '10px', color: '#64748b' }}>Total</div>
-              <div style={{ fontSize: '13px', fontWeight: 800, color: '#f8fafc' }}>Rp {new Intl.NumberFormat('id-ID').format(total)}</div>
+              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Total</div>
+              <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)' }}>Rp {new Intl.NumberFormat('id-ID').format(total)}</div>
             </>
           )}
         </div>
@@ -121,7 +121,7 @@ function DonutChart({ data }: { data: typeof categorySpending }) {
             }}
           >
             <span style={{ fontSize: '13px' }}>{item.icon}</span>
-            <span style={{ fontSize: '11px', color: '#94a3b8', flex: 1 }}>{item.label}</span>
+            <span style={{ fontSize: '11px', color: 'var(--text-secondary)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
             <span style={{ fontSize: '11px', fontWeight: 700, color: item.color }}>
               {(item.amount / total * 100).toFixed(0)}%
             </span>
@@ -158,9 +158,9 @@ function GoalCard({ goal }: { goal: typeof mockGoals[0] }) {
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '12px' }}>
         <span style={{ fontSize: '22px' }}>{goal.icon}</span>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: '13px', fontWeight: 600, color: '#f8fafc' }}>{goal.name}</div>
-          <div style={{ fontSize: '11px', color: '#64748b' }}>Target: {goal.deadline}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{goal.name}</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Target: {goal.deadline}</div>
         </div>
         <div style={{
           fontSize: '12px', fontWeight: 700, color: goal.color,
@@ -176,8 +176,8 @@ function GoalCard({ goal }: { goal: typeof mockGoals[0] }) {
         }} />
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-        <span style={{ fontSize: '11px', color: '#64748b' }}>Rp {new Intl.NumberFormat('id-ID').format(goal.current)}</span>
-        <span style={{ fontSize: '11px', color: '#475569' }}>of Rp {new Intl.NumberFormat('id-ID').format(goal.target)}</span>
+        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Rp {new Intl.NumberFormat('id-ID').format(goal.current)}</span>
+        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>of Rp {new Intl.NumberFormat('id-ID').format(goal.target)}</span>
       </div>
     </div>
   );
@@ -229,11 +229,11 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
       {/* Greeting */}
       <div className="greeting-row">
         <div>
-          <h2 className="greeting-title" style={{ fontWeight: 800, color: '#f8fafc', margin: '0 0 6px', letterSpacing: '-0.5px' }}>
+          <h2 className="greeting-title" style={{ fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 6px', letterSpacing: '-0.5px' }}>
             {getGreeting()}, {user?.name?.split(' ')[0] ?? 'User'} 👋
           </h2>
-          <p style={{ fontSize: '13px', color: '#64748b', margin: '3px 0 0' }}>
-            Here's your financial overview for today.
+          <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '3px 0 0' }}>
+            Here is your financial overview.
           </p>
         </div>
         <button
@@ -270,8 +270,8 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
       <div className="dash-grid-2">
         {/* Account carousel */}
         <div style={{
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
-          borderRadius: '20px', padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px',
+          background: 'var(--bg-surface)', border: '1px solid var(--border)',
+          borderRadius: '20px', padding: '22px', position: 'relative', overflow: 'hidden',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', margin: 0 }}>My Accounts</h3>
@@ -302,12 +302,12 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
 
         {/* Spending bar chart */}
         <div style={{
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+          background: 'var(--bg-surface)', border: '1px solid var(--border)',
           borderRadius: '20px', padding: '22px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', margin: 0 }}>Monthly Spending</h3>
-            <span style={{ fontSize: '11px', color: '#475569', background: 'rgba(255,255,255,0.04)', padding: '4px 10px', borderRadius: '8px' }}>Last 6 months</span>
+            <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Monthly Spending</h3>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', background: 'var(--bg-surface-2)', padding: '4px 10px', borderRadius: '8px' }}>Last 6 months</span>
           </div>
           <div style={{ height: '190px' }}>
             <SpendingChart data={mockSpending} />
@@ -319,10 +319,10 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
       <div className="dash-grid-2-equal">
         {/* Quick actions */}
         <div style={{
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+          background: 'var(--bg-surface)', border: '1px solid var(--border)',
           borderRadius: '20px', padding: '22px',
         }}>
-          <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', margin: '0 0 14px' }}>Quick Actions</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 14px' }}>Quick Actions</h3>
           <div className="quick-actions-grid">
             {quickActions.map(({ label, icon, page, color, bg, desc }) => (
               <button key={label} onClick={() => onNavigate(page)} style={{
@@ -349,8 +349,8 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
                   fontSize: '18px',
                 }}>{icon}</div>
                 <div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#f8fafc' }}>{label}</div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}>{desc}</div>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 2px' }}>{label}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{desc}</div>
                 </div>
               </button>
             ))}
@@ -359,12 +359,12 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
 
         {/* Spending by category donut */}
         <div style={{
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+          background: 'var(--bg-surface)', border: '1px solid var(--border)',
           borderRadius: '20px', padding: '22px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', margin: 0 }}>Spending by Category</h3>
-            <span style={{ fontSize: '11px', color: '#475569', background: 'rgba(255,255,255,0.04)', padding: '4px 10px', borderRadius: '8px' }}>July 2026</span>
+            <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Spending by Category</h3>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', background: 'var(--bg-surface-2)', padding: '4px 10px', borderRadius: '8px' }}>July 2026</span>
           </div>
           <DonutChart data={categorySpending} />
         </div>
@@ -374,11 +374,11 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
       <div className="dash-grid-goals">
         {/* Goals */}
         <div style={{
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+          background: 'var(--bg-surface)', border: '1px solid var(--border)',
           borderRadius: '20px', padding: '22px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', margin: 0 }}>Financial Goals</h3>
+            <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Financial Goals</h3>
             <span style={{
               fontSize: '11px', color: '#10b981', background: 'rgba(16,185,129,0.1)',
               border: '1px solid rgba(16,185,129,0.2)', padding: '3px 10px', borderRadius: '8px', fontWeight: 600,
@@ -391,11 +391,11 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
 
         {/* Recent transactions */}
         <div style={{
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+          background: 'var(--bg-surface)', border: '1px solid var(--border)',
           borderRadius: '20px', padding: '22px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', margin: 0 }}>Recent Transactions</h3>
+            <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Recent Transactions</h3>
             <button onClick={() => onNavigate('transactions')} style={{ fontSize: '12px', color: '#6366f1', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
               View all →
             </button>

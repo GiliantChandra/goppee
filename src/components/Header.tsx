@@ -53,11 +53,11 @@ export default function Header({ currentPage, onNavigate, onLogout, isMobile = f
     }}>
       {/* Page title */}
       <div style={{ flex: 1 }}>
-        <h1 style={{ fontSize: isMobile ? '17px' : '20px', fontWeight: 700, color: '#f8fafc', margin: 0 }}>
+        <h1 style={{ fontSize: isMobile ? '17px' : '20px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
           {pageTitles[currentPage]}
         </h1>
         {!isMobile && (
-          <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
+          <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0 }}>
             {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         )}
@@ -66,22 +66,22 @@ export default function Header({ currentPage, onNavigate, onLogout, isMobile = f
       {/* Search bar - hidden on mobile */}
       {!isMobile && (
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-          <svg width="15" height="15" fill="none" stroke="#64748b" strokeWidth="2" viewBox="0 0 24 24"
-            style={{ position: 'absolute', left: '12px', pointerEvents: 'none' }}>
+          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"
+            style={{ position: 'absolute', left: '12px', pointerEvents: 'none', color: 'var(--text-muted)' }}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <input
+            <input
             placeholder="Search transactions..."
             style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(99,102,241,0.15)',
+              background: 'var(--bg-surface-2)',
+              border: '1px solid var(--border-accent)',
               borderRadius: '10px',
               padding: '8px 16px 8px 36px',
-              color: '#f8fafc', fontSize: '13px', outline: 'none',
+              color: 'var(--text-primary)', fontSize: '13px', outline: 'none',
               width: '220px', transition: 'all 0.2s',
             }}
             onFocus={e => { e.target.style.borderColor = 'rgba(99,102,241,0.5)'; e.target.style.width = '260px'; }}
-            onBlur={e => { e.target.style.borderColor = 'rgba(99,102,241,0.15)'; e.target.style.width = '220px'; }}
+            onBlur={e => { e.target.style.borderColor = 'var(--border-accent)'; e.target.style.width = '220px'; }}
           />
         </div>
       )}

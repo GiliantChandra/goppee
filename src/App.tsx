@@ -86,7 +86,7 @@ function AppInner() {
         <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', paddingBottom: '80px', width: '100%', maxWidth: '100vw' }}>
           {renderPage()}
         </main>
-        <MobileNav currentPage={currentPage} onNavigate={setCurrentPage} onLogout={logout} />
+        <MobileNav currentPage={currentPage} onNavigate={setCurrentPage} />
       </div>
     );
   }
