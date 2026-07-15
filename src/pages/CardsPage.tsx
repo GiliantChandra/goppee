@@ -52,7 +52,7 @@ export default function CardsPage() {
   }
 
   return (
-    <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.4s ease' }}>
+    <div className="page-padding" style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.4s ease' }}>
       {/* Card tabs */}
       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
         {accounts.map((acc, i) => (
@@ -72,7 +72,7 @@ export default function CardsPage() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'start' }}>
+      <div className="cards-grid">
         {/* Card display */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{

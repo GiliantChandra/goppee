@@ -225,11 +225,11 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
   }
 
   return (
-    <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '22px', animation: 'fadeIn 0.4s ease' }}>
+    <div className="page-padding" style={{ display: 'flex', flexDirection: 'column', gap: '22px', animation: 'fadeIn 0.4s ease' }}>
       {/* Greeting */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="greeting-row">
         <div>
-          <h2 style={{ fontSize: '28px', fontWeight: 800, color: '#f8fafc', margin: '0 0 6px', letterSpacing: '-0.5px' }}>
+          <h2 className="greeting-title" style={{ fontWeight: 800, color: '#f8fafc', margin: '0 0 6px', letterSpacing: '-0.5px' }}>
             {getGreeting()}, {user?.name?.split(' ')[0] ?? 'User'} 👋
           </h2>
           <p style={{ fontSize: '13px', color: '#64748b', margin: '3px 0 0' }}>
@@ -237,6 +237,7 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
           </p>
         </div>
         <button
+          className="greeting-btn"
           onClick={() => onNavigate('transfer')}
           style={{
             padding: '11px 22px',
@@ -258,7 +259,7 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
       </div>
 
       {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px' }}>
+      <div className="stat-grid">
         <StatCard label="Total Net Worth" value={`Rp ${new Intl.NumberFormat('id-ID').format(totalBalance)}`} rawValue={totalBalance} delta="↑ 8.2% this month" color="16,185,129" icon="💎" />
         <StatCard label="Monthly Income" value="Rp 12.500.000" rawValue={12_500_000} delta="↑ Salary received Jul 1" color="99,102,241" icon="💼" />
         <StatCard label="Monthly Spending" value="Rp 5.829.000" rawValue={5_829_000} delta="↓ 14.8% vs June" color="245,158,11" icon="🛒" />
@@ -266,7 +267,7 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
       </div>
 
       {/* Row 2: Cards + Spending bar chart */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '18px' }}>
+      <div className="dash-grid-2">
         {/* Account carousel */}
         <div style={{
           background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
@@ -315,14 +316,14 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
       </div>
 
       {/* Row 3: Quick actions + Donut chart */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px' }}>
+      <div className="dash-grid-2-equal">
         {/* Quick actions */}
         <div style={{
           background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
           borderRadius: '20px', padding: '22px',
         }}>
           <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', margin: '0 0 14px' }}>Quick Actions</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div className="quick-actions-grid">
             {quickActions.map(({ label, icon, page, color, bg, desc }) => (
               <button key={label} onClick={() => onNavigate(page)} style={{
                 padding: '16px', borderRadius: '14px',
@@ -370,7 +371,7 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
       </div>
 
       {/* Row 4: Goals + Recent transactions */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: '18px' }}>
+      <div className="dash-grid-goals">
         {/* Goals */}
         <div style={{
           background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',

@@ -67,7 +67,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div style={{ padding: '28px 32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'start', animation: 'fadeIn 0.4s ease' }}>
+    <div className="page-padding settings-grid" style={{ animation: 'fadeIn 0.4s ease' }}>
       {/* Left column */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {/* Profile */}
